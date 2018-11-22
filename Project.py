@@ -1,0 +1,3 @@
+test = 'g'
+
+print(test)
