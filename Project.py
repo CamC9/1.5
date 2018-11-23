@@ -29,15 +29,13 @@ def addCards(currentPair): #Randomly generates a group of 5 table cards for the 
 def combine(pair, table): #Combines the player's pair cards and the table cards into a single list
 
     totalCards = pair + table
+    totalCards.sort()
     print('Total cards: ' + str(totalCards))
     return(totalCards)
 
-def isFlush(pair, table):
+def isFlush(cards):
 
-    totalCards = combine(pair, table)
-    totalCards.sort()
-    
-    results = [card for i, card in enumerate(totalCards) if totalCards[i-1][0] == totalCards[i][0]]
+    results = [card for i, card in enumerate(cards) if cards[i-1][0] == cards[i][0]]
 
     if len(results) == 4 and results[0][0] == results[1][0] == results[2][0] == results[3][0]: #Not sure how to make this statement more compact
         return(True)
@@ -45,29 +43,103 @@ def isFlush(pair, table):
     else:
         return(False)
 
-'''
-def checkHand(currentPair, currentTable):
+def checkValue(x): #Converts face cards to 
 
+    if x == 'J':
+        return(11)
+    elif x == 'Q':
+        return(12)
+    elif x == 'K':
+        return(13)
+    elif x == 'A':
+        return(14)
+    elif RepresentsInt(x):
+        return(int(x))
+    else:
+        return('N/A')
 
-    if isFlush:
+def returnValues(cardList):
+
+    newList = []
+
+    for card in cardList:
+        if len(card) == 2:
+            newList += list(card)
+        else:
+            newList += card[0]
+            newList += ['10']
     
-    if isStrsight:
+    newList.sort()
 
-    if isPair:
+    for x, value in enumerate(newList):
+        if RepresentsInt(checkValue(value)):
+            newList[x] = checkValue(value)
+        else:
+            newList = removeAll(newList, value)
+    
+    newList = list(set(newList))
+    return(newList)
 
-    if is3OfKind:
+def removeAll(someList, val):
+   return([value for value in someList if value != val])
 
-    if is4OfKind:
+def RepresentsInt(s):
+    try: 
+        int(s)
+        return(True)
+    except ValueError:
+        return(False)
 
-    if isFullhouse:
-'''
+def isStraight(cards):
 
+    values = returnValues(cards)
+
+    for i in range(len(values)-4):
+        if values[-(i+1)] - values[-(i+5)] == 4:
+            return(True)
+    return(False)
+    
+
+def checkHand(currentPair, currentTable, points):
+
+    totalCards = combine(currentPair, currentTable)
+
+    if isFlush(totalCards):
+        points += 3500
+        print('')
+        print('You got a flush! +3500 points')
+        print('')
+        print('Total points: ' + str(points))
+        print('')
+    
+    if isStraight(totalCards):
+        points += 1800
+        print('')
+        print('You got a straight! +1800 points')
+        print('')
+        print('Total points: ' + str(points))
+        print('')
+    
+    return(points)
+
+    #if isPair:
+
+    #if is3OfKind:
+
+    #if is4OfKind:
+
+    #if isFullhouse:
+
+points = 0
 #For testing purposes:
-''' 
+'''
 for i in range(100):
     pair = dealPair()
     print('Dealt hand: ' + str(pair))
+    
     Table = addCards(pair)
     print('Table cards: ' + str(Table))
-    print(isFlush(pair, Table))
+    
+    points = checkHand(pair, Table, points)
 '''
+#testList = ['d10', 'cA', 'c5', 'c2', 'd9', 's8', 's9']
