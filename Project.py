@@ -8,10 +8,9 @@ It's possible we can expand the game to support playing against a computer
 
 import math, random
 
-cardTypes = ['s','c','h','d'] #The suits for a card are: 's' for spades, 'c' for clubs, 'h' for hearts, or 'd' for diamonds
-cardVals = [str(i) for i in range(2,11)] + ['J','Q','K','A'] #The values for a card are numbers 2-10, 'J' for Jack, 'Q' for Queen, 'K' for King, or 'A' for Ace
-cardsList = [s + c for s in cardTypes for c in cardVals] #The list of all 52 possible cards in a deck are compiled into a list
-#print(cardsList)
+
+
+
 
 def dealPair(currentPair = ''): #Randomly generates a pair of cards for the player
 
@@ -19,6 +18,8 @@ def dealPair(currentPair = ''): #Randomly generates a pair of cards for the play
     newCard1, newCard2 = random.sample(availableCards,2)
 
     return([newCard1, newCard2])
+
+
 
 def addCards(currentPair): #Randomly generates a group of 5 table cards for the player to compare their hand to
     
@@ -58,6 +59,8 @@ def checkValue(x): #Converts face cards to
     else:
         return('N/A')
 
+
+
 def returnValues(cardList):
 
     newList = []
@@ -80,8 +83,12 @@ def returnValues(cardList):
     newList = list(set(newList))
     return(newList)
 
+
+
 def removeAll(someList, val):
    return([value for value in someList if value != val])
+
+
 
 def RepresentsInt(s):
     try: 
@@ -89,6 +96,8 @@ def RepresentsInt(s):
         return(True)
     except ValueError:
         return(False)
+
+
 
 def isStraight(cards):
 
@@ -98,7 +107,14 @@ def isStraight(cards):
         if values[-(i+1)] - values[-(i+5)] == 4:
             return(True)
     return(False)
-    
+
+
+
+def isPair(cards):
+
+    values = returnValues(cards)
+
+
 
 def checkHand(currentPair, currentTable, points):
 
@@ -122,7 +138,7 @@ def checkHand(currentPair, currentTable, points):
     
     return(points)
 
-    #if isPair:
+    if isPair(totalCards):
 
     #if is3OfKind:
 
@@ -130,16 +146,17 @@ def checkHand(currentPair, currentTable, points):
 
     #if isFullhouse:
 
+
+cardTypes = ['s','c','h','d'] #The suits for a card are: 's' for spades, 'c' for clubs, 'h' for hearts, or 'd' for diamonds
+cardVals = [str(i) for i in range(2,11)] + ['J','Q','K','A'] #The values for a card are numbers 2-10, 'J' for Jack, 'Q' for Queen, 'K' for King, or 'A' for Ace
+cardsList = [s + c for s in cardTypes for c in cardVals] #The list of all 52 possible cards in a deck are compiled into a list
+
 points = 0
-#For testing purposes:
-'''
-for i in range(100):
-    pair = dealPair()
-    print('Dealt hand: ' + str(pair))
+
+pair = dealPair()
+print('Dealt hand: ' + str(pair))
     
-    Table = addCards(pair)
-    print('Table cards: ' + str(Table))
+Table = addCards(pair)
+print('Table cards: ' + str(Table))
     
-    points = checkHand(pair, Table, points)
-'''
 #testList = ['d10', 'cA', 'c5', 'c2', 'd9', 's8', 's9']
