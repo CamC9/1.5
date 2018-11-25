@@ -27,6 +27,8 @@ def addCards(currentPair): #Randomly generates a group of 5 table cards for the 
     table = random.sample(availableCards, 5)
     return(table)
 
+
+
 def combine(pair, table): #Combines the player's pair cards and the table cards into a single list
 
     totalCards = pair + table
@@ -34,15 +36,7 @@ def combine(pair, table): #Combines the player's pair cards and the table cards 
     print('Total cards: ' + str(totalCards))
     return(totalCards)
 
-def isFlush(cards):
 
-    results = [card for i, card in enumerate(cards) if cards[i-1][0] == cards[i][0]]
-
-    if len(results) == 4 and results[0][0] == results[1][0] == results[2][0] == results[3][0]: #Not sure how to make this statement more compact
-        return(True)
-    
-    else:
-        return(False)
 
 def checkValue(x): #Converts face cards to 
 
@@ -71,7 +65,6 @@ def returnValues(cardList):
         else:
             newList += card[0]
             newList += ['10']
-    
     newList.sort()
 
     for x, value in enumerate(newList):
@@ -81,6 +74,20 @@ def returnValues(cardList):
             newList = removeAll(newList, value)
     
     newList = list(set(newList))
+    return(newList)
+
+
+
+def reorder(myList):
+
+    newList = []
+    for h in range(2,11):
+        newList += [item for i, item in enumerate(myList) if RepresentsInt(myList[i][-1]) and len(myList[i]) == 2 and int(myList[i][-1]) == h]
+    newList += [item for i, item in enumerate(myList) if len(myList[i]) == 3]
+    
+    for j in range(4):
+        newList += [item for i, item in enumerate(myList) if myList[i][-1] == valueOrder[j]]
+    
     return(newList)
 
 
@@ -101,12 +108,28 @@ def RepresentsInt(s):
 
 def isStraight(cards):
 
+    results = []
     values = returnValues(cards)
 
     for i in range(len(values)-4):
         if values[-(i+1)] - values[-(i+5)] == 4:
-            return(True)
+            for j in range(5):
+                results += [values[(-(i+5))+j]]
+            return[True,results]
     return(False)
+
+
+
+def isFlush(cards):
+
+    results = [card for i, card in enumerate(cards) if cards[i-1][0] == cards[i][0]]
+
+    if len(results) == 4 and results[0][0] == results[1][0] == results[2][0] == results[3][0]: #Not sure how to make this statement more compact
+        results += [cards[(cards.index(results[0]))-1]]
+        results = reorder(results)
+        return[True,results]    
+    else:
+        return(False)
 
 
 
@@ -121,42 +144,59 @@ def checkHand(currentPair, currentTable, points):
     totalCards = combine(currentPair, currentTable)
 
     if isFlush(totalCards):
-        points += 3500
+        points += pointSystem['flush']
         print('')
-        print('You got a flush! +3500 points')
+        print('You got a flush! +' + str(pointSystem['flush']) + ' points')
         print('')
         print('Total points: ' + str(points))
+        print(isFlush(totalCards))
         print('')
     
     if isStraight(totalCards):
-        points += 1800
+        points += pointSystem['straight']
         print('')
-        print('You got a straight! +1800 points')
+        print('You got a straight! +' + str(pointSystem['straight']) + ' points')
         print('')
         print('Total points: ' + str(points))
+        print(isStraight(totalCards))
         print('')
     
-    return(points)
-
     if isPair(totalCards):
-
+        points += pointSystem['pair']
     #if is3OfKind:
 
     #if is4OfKind:
 
     #if isFullhouse:
 
+    return(points)
 
-cardTypes = ['s','c','h','d'] #The suits for a card are: 's' for spades, 'c' for clubs, 'h' for hearts, or 'd' for diamonds
-cardVals = [str(i) for i in range(2,11)] + ['J','Q','K','A'] #The values for a card are numbers 2-10, 'J' for Jack, 'Q' for Queen, 'K' for King, or 'A' for Ace
-cardsList = [s + c for s in cardTypes for c in cardVals] #The list of all 52 possible cards in a deck are compiled into a list
+pointSystem = {'pair':5,
+               'twoPair':100,
+               '3ofKind':200,
+               'straight':1250,
+               'flush':2500,
+               'fullHouse':3500,
+               '4ofKind':20000,
+               'straightFlush':350000,
+               'royalFlush':3200000}
 
 points = 0
+valueOrder = ['J','Q','K','A']
 
-pair = dealPair()
-print('Dealt hand: ' + str(pair))
+cardTypes = ['s','c','h','d'] #The suits for a card are: 's' for spades, 'c' for clubs, 'h' for hearts, or 'd' for diamonds
+cardVals = [str(i) for i in range(2,11)] + valueOrder #The values for a card are numbers 2-10, 'J' for Jack, 'Q' for Queen, 'K' for King, or 'A' for Ace
+cardsList = [s + c for s in cardTypes for c in cardVals] #The list of all 52 possible cards in a deck are compiled into a list
+
+'''
+for i in range(300):
+    pair = dealPair()
+    print('Dealt hand: ' + str(pair))
+        
+    Table = addCards(pair)
+    print('Table cards: ' + str(Table))
+
+    points = checkHand(pair, Table, points)
+'''
     
-Table = addCards(pair)
-print('Table cards: ' + str(Table))
-    
-#testList = ['d10', 'cA', 'c5', 'c2', 'd9', 's8', 's9']
+#testList = ['d10', 'cA', 'c5', 'c2', 'c9', 's8', 'c10']
