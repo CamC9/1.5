@@ -33,7 +33,7 @@ def combine(pair, table): #Combines the player's pair cards and the table cards 
 
     totalCards = pair + table
     totalCards.sort()
-    print('Total cards: ' + str(totalCards))
+    print('Total cards: ' + str(reorder(totalCards)))
     return(totalCards)
 
 
@@ -153,8 +153,11 @@ def checkOccurrences(cards):
     if occurrences > 2 and newList[0] == newList[1] == newList[2]:
         is4OfKind = True
 
-    elif occurrences > 2:
+    elif occurrences > 2 and newList[0] == newList[1]:
         isFullHouse = True
+
+    elif occurrences > 2:
+        isTwoPair = True
 
     elif occurrences > 1 and newList[0] == newList[1]:
         is3OfKind = True
@@ -322,8 +325,8 @@ for i in range(300):
     
 #testList = ['d10', 'cA', 'h10', 'c2', 'h4', 's10', 'c10']
 
-testPair = ['sA', 'sK']
-testTable = ['sQ', 'sJ', 's10', 'c4', 'h9']
+testPair = ['s2', 'h2']
+testTable = ['c5', 'h5', 's10', 'c10', 'h9']
 
 points = checkHand(testPair, testTable, points)
 
