@@ -139,27 +139,41 @@ def checkOccurrences(cards):
     global is3OfKind
     global is4OfKind
     global isFullHouse
+    global isHighCard
 
+    winningHand = []
     reordered = reorder(cards)
     values = returnValues(reordered)
     occurrences = 0
     newList = []
 
     for i, value in enumerate(values):
-        if values[i-1] == value:
-            occurrences += 1
-            newList += [value]
+        if i < 5:
+            if values[i+2] == values[i-1]:
+                occurrences = 3
+                for j in range(-1,3):
+                    newList = [values[i+j]]
+                break
+            elif values[i+2] == value:
+                occurrences += 2
+                for j in range(3):
+                    newList += [values[i+j]]
+            elif (values[i+1] == value and values[i+2] != value and values[i-1] != value) or (values[i+1] == values[i+2] and values[i+1] != value and i == 4):
+                occurrences += 1
+                for j in range(2):
+                    newList += [values[i+j]]
 
-    if occurrences > 2 and newList[0] == newList[1] == newList[2]:
+    if occurrences > 2 and len(newList) == 4:
         is4OfKind = True
 
-    elif occurrences > 2 and newList[0] == newList[1]:
+    elif occurrences > 2 and len(newList) == 5:
         isFullHouse = True
 
     elif occurrences > 2:
         isTwoPair = True
+        newList = removeAll(newList,newList[0])
 
-    elif occurrences > 1 and newList[0] == newList[1]:
+    elif occurrences > 1 and newList[0] == newList[-1]:
         is3OfKind = True
 
     elif occurrences > 1:
@@ -174,8 +188,22 @@ def checkOccurrences(cards):
         is3OfKind = False
         is4OfKind = False
         isFullHouse = False
+        isHighCard = True
     
+    for num in list(set(newList)):
+        for card in cards:
+            if str(num) in card or num == checkValue(card[-1]):
+                winningHand += [card]
+                winningHand = reorder(winningHand)
+    
+    for item in winningHand:
+        reordered = removeAll(reordered,item)
 
+    for i in range(5-len(winningHand)):
+        winningHand += [reordered[-1-i]]
+
+    winningHand = reorder(winningHand)
+    return(winningHand)
 
 def checkHand(currentPair, currentTable, points):
 
@@ -184,12 +212,14 @@ def checkHand(currentPair, currentTable, points):
     global is3OfKind
     global is4OfKind
     global isFullHouse
+    global isHighCard
 
     isPair = False
     isTwoPair = False
     is3OfKind = False
     is4OfKind = False
     isFullHouse = False
+    isHighCard = False
 
     totalCards = combine(currentPair, currentTable)
 
@@ -199,7 +229,6 @@ def checkHand(currentPair, currentTable, points):
             points += pointSystem['royalFlush']
             print('')
             print('You got a royal flush! +' + str(pointSystem['royalFlush']) + ' points')
-            print('')
             print('Total points: ' + str(points))
             print('')
             return(points)
@@ -208,7 +237,6 @@ def checkHand(currentPair, currentTable, points):
             points += pointSystem['straightFlush']
             print('')
             print('You got a straight flush! +' + str(pointSystem['straightFlush']) + ' points')
-            print('')
             print('Total points: ' + str(points))
             print('')
             return(points)
@@ -216,7 +244,6 @@ def checkHand(currentPair, currentTable, points):
         points += pointSystem['flush']
         print('')
         print('You got a flush! +' + str(pointSystem['flush']) + ' points')
-        print('')
         print('Total points: ' + str(points))
         print(isFlush(totalCards))
         print('')
@@ -226,19 +253,20 @@ def checkHand(currentPair, currentTable, points):
         points += pointSystem['straight']
         print('')
         print('You got a straight! +' + str(pointSystem['straight']) + ' points')
-        print('')
         print('Total points: ' + str(points))
         print(isStraight(totalCards))
         print('')
         return(points)
 
-    checkOccurrences(totalCards)
+    winningHand = checkOccurrences(totalCards)
+
+    if isPair or isTwoPair or is3OfKind or is4OfKind or isFullHouse or isHighCard:
+        print('Winning Hand: ' + str(winningHand))
     
     if is4OfKind:
         points += pointSystem['4ofKind']
         print('')
         print('You got a 4 of a kind! +' + str(pointSystem['4ofKind']) + ' points')
-        print('')
         print('Total points: ' + str(points))
         print('')
         return(points)
@@ -247,7 +275,6 @@ def checkHand(currentPair, currentTable, points):
         points += pointSystem['fullHouse']
         print('')
         print('You got a full house! +' + str(pointSystem['fullHouse']) + ' points')
-        print('')
         print('Total points: ' + str(points))
         print('')
         return(points)
@@ -256,7 +283,6 @@ def checkHand(currentPair, currentTable, points):
         points += pointSystem['3ofKind']
         print('')
         print('You got a 3 of a kind! +' + str(pointSystem['3ofKind']) + ' points')
-        print('')
         print('Total points: ' + str(points))
         print('')
         return(points)
@@ -265,7 +291,6 @@ def checkHand(currentPair, currentTable, points):
         points += pointSystem['twoPair']
         print('')
         print('You got a two pair! +' + str(pointSystem['twoPair']) + ' points')
-        print('')
         print('Total points: ' + str(points))
         print('')
         return(points)
@@ -274,19 +299,19 @@ def checkHand(currentPair, currentTable, points):
         points += pointSystem['pair']
         print('')
         print('You got a pair! +' + str(pointSystem['pair']) + ' points')
-        print('')
         print('Total points: ' + str(points))
         print('')
         return(points)
 
-    else:
+    elif isHighCard:
         points += pointSystem['highCard']
         print('')
         print('You got a high card! +' + str(pointSystem['highCard']) + ' point')
-        print('')
         print('Total points: ' + str(points))
         print('')
         return(points)
+    
+    
 
 pointSystem = {'highCard':1,
                'pair':5,
@@ -307,12 +332,13 @@ isPair = False
 is3OfKind = False
 is4OfKind = False
 isFullHouse = False
+isHighCard = False
 
 cardTypes = ['s','c','h','d'] #The suits for a card are: 's' for spades, 'c' for clubs, 'h' for hearts, or 'd' for diamonds
 cardVals = [str(i) for i in range(2,11)] + valueOrder #The values for a card are numbers 2-10, 'J' for Jack, 'Q' for Queen, 'K' for King, or 'A' for Ace
 cardsList = [s + c for s in cardTypes for c in cardVals] #The list of all 52 possible cards in a deck are compiled into a list
 
-'''
+
 for i in range(300):
     pair = dealPair()
     print('Dealt hand: ' + str(pair))
@@ -321,19 +347,14 @@ for i in range(300):
     print('Table cards: ' + str(Table))
 
     points = checkHand(pair, Table, points)
-'''
-    
+
+
+
 #testList = ['d10', 'cA', 'h10', 'c2', 'h4', 's10', 'c10']
 
-testPair = ['s2', 'h2']
-testTable = ['c5', 'h5', 's10', 'c10', 'h9']
-
-points = checkHand(testPair, testTable, points)
-
 '''
-print('isPair: ' + str(isPair))
-print('isTwoPair: ' + str(isTwoPair))
-print('is3OfKind: ' + str(is3OfKind))
-print('is4OfKind: ' + str(is4OfKind))
-print('isFullHouse: ' + str(isFullHouse))
+testPair = ['cQ', 's10']
+testTable = ['sK', 'c10', 'cA', 'd10', 'cK']
+
+points = checkHand(testPair,testTable,points)
 '''
