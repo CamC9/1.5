@@ -35,7 +35,7 @@ def combine(pair, table): #Combines the player's pair cards and the table cards 
     printReturn = 'Total cards: ' + str(reorder(totalCards))
     return(totalCards, printReturn)
 
-
+print('')
 
 def checkValue(x): #Converts face cards to 
 
