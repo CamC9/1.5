@@ -556,3 +556,4 @@ points = checkHand(tStraightFlush6[0], tStraightFlush6[1], points)
 
 #print(returnWinningHand(tPair[0], tPair[1], points))
 #print(isStraight(combine(tStraight6T2[0], tStraight6T2[1])[0]))
+
