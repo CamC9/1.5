@@ -14,6 +14,8 @@ pygame.font.init()
 win = pygame.display.set_mode((800,800))
 win.fill((255,255,255))
 
+
+
 class button():
     def __init__(self, color, x,y,width,height, text='', fontColor = (0,0,0), fontSize=60):
         self.color = color
@@ -45,13 +47,16 @@ class button():
             
         return False
 
-def redrawWindow(B1,B2, B3, B4):
+
+
+def redrawWindow(buttonList, textsList):
     win.fill((255,255,255))
-    B2.draw(win)
-    B3.draw(win)
-    B4.draw(win)
-    B1.draw(win,(0,0,0))
+    for button in buttonList:
+        button.draw(win,(0,0,0))
+    for text in textsList:
+        text.draw(win)
     
+
 
 def dealPair(currentPair = ''): #Randomly generates a pair of cards for the player
 
@@ -76,7 +81,7 @@ def combine(pair, table): #Combines the player's pair cards and the table cards 
     printReturn = 'Total cards: ' + str(reorder(totalCards))
     return(totalCards, printReturn)
 
-print('')
+
 
 def checkValue(x): #Converts face cards to 
 
@@ -149,12 +154,9 @@ def convert(letter):
                   'Q':12,
                   'K':13,
                   'A':14}
-    
     if letter == 'J' or letter == 'Q' or letter == 'K' or letter == 'A':
         return(conversion[letter])
 
-    else:
-        return('z')
 
 
 def isStraight(cards):
@@ -186,7 +188,14 @@ def isStraight(cards):
                                 winningHand.remove(winningHand[k+1])
                             else:
                                 winningHand.remove(winningHand[k+1])
+
             return[True,winningHand]
+
+        elif cards[0][-1] == '2' and cards[1][-1] == '3' and cards[2][-1] == '4' and cards[3][-1] == '5' and cards[5][-1] == 'A':
+            return[True,[cards[5],cards[0],cards[1],cards[2],cards[3]]]
+
+        elif cards[0][-1] == '2' and cards[1][-1] == '3' and cards[2][-1] == '4' and cards[3][-1] == '5' and cards[6][-1] == 'A':
+            return[True,[cards[6],cards[0],cards[1],cards[2],cards[3]]]
     
     return(False)
 
@@ -203,6 +212,13 @@ def isStraightSafe(cards):
             for j in range(5):
                 results += [values[(-(i+5))+j]]
             return[True]
+
+        elif cards[0][-1] == '2' and cards[1][-1] == '3' and cards[2][-1] == '4' and cards[3][-1] == '5' and cards[5][-1] == 'A':
+            return[True]
+
+        elif cards[0][-1] == '2' and cards[1][-1] == '3' and cards[2][-1] == '4' and cards[3][-1] == '5' and cards[6][-1] == 'A':
+            return[True]
+
     return(False)
 
 
@@ -394,7 +410,7 @@ def returnWinningHand(currentPair, currentTable):
 
 
 
-def checkHand(currentPair, currentTable, points):
+def checkHand(currentPair, currentTable, Tpoints):
 
     global isTwoPair
     global isPair
@@ -410,108 +426,60 @@ def checkHand(currentPair, currentTable, points):
     isFullHouse = False
     isHighCard = False
 
-    winningHand1 = []
-    winningHand2 = []
-
     totalCards = combine(currentPair, currentTable)[0]
     print(combine(currentPair, currentTable)[1])
 
     if isRoyalFlush(totalCards):
-        winningHand1 = isRoyalFlush(totalCards)[-1]
-        points += pointSystem['royalFlush']
-        print('Winning Hand: ' + str(winningHand1))
-        print('')
+        Tpoints += pointSystem['royalFlush']
         pointsMessage = 'You got a royal flush! +' + str(pointSystem['royalFlush']) + ' points'
-        print('Total points: ' + str(points))
-        print('')
-        return(points,pointsMessage)
+        return(Tpoints,pointsMessage)
 
     elif isStraightFlush(totalCards):
-        winningHand1 = isStraightFlush(totalCards)[-1]
-        points += pointSystem['straightFlush']
-        print('Winning Hand: ' + str(winningHand1))
-        print('')
+        Tpoints += pointSystem['straightFlush']
         pointsMessage = 'You got a straight flush! +' + str(pointSystem['straightFlush']) + ' points'
-        print('Total points: ' + str(points))
-        print('')
-        return(points,pointsMessage)
+        return(Tpoints,pointsMessage)
 
     elif isFlush(totalCards):
-        winningHand1 = isFlush(totalCards)[-1]
-        points += pointSystem['flush']
-        print('Winning Hand: ' + str(winningHand1))
-        print('')
+        Tpoints += pointSystem['flush']
         pointsMessage = 'You got a flush! +' + str(pointSystem['flush']) + ' points'
-        print('Total points: ' + str(points))
-        print('')
-        return(points,pointsMessage)
+        return(Tpoints,pointsMessage)
     
     elif isStraight(totalCards):
-        winningHand1 = isStraight(totalCards)[-1]
-        points += pointSystem['straight']
-        print('Winning Hand: ' + str(winningHand1))
-        print('')
+        Tpoints += pointSystem['straight']
         pointsMessage = 'You got a straight! +' + str(pointSystem['straight']) + ' points'
-        print
-        print('Total points: ' + str(points))
-        print('')
-        return(points,pointsMessage)
+        return(Tpoints,pointsMessage)
 
-    winningHand2 = checkOccurrences(totalCards)
+    checkOccurrences(totalCards)
 
     if is4OfKind:
-        points += pointSystem['4ofKind']
-        print('Winning Hand: ' + str(winningHand2))
-        print('')
+        Tpoints += pointSystem['4ofKind']
         pointsMessage = 'You got a 4 of a kind! +' + str(pointSystem['4ofKind']) + ' points'
-        print('Total points: ' + str(points))
-        print('')
-        return(points,pointsMessage)
+        return(Tpoints,pointsMessage)
     
     if isFullHouse:
-        points += pointSystem['fullHouse']
-        print('Winning Hand: ' + str(winningHand2))
-        print('')
+        Tpoints += pointSystem['fullHouse']
         pointsMessage = 'You got a full house! +' + str(pointSystem['fullHouse']) + ' points'
-        print('Total points: ' + str(points))
-        print('')
-        return(points,pointsMessage)
+        return(Tpoints,pointsMessage)
 
     if is3OfKind:
-        points += pointSystem['3ofKind']
-        print('Winning Hand: ' + str(winningHand2))
-        print('')
+        Tpoints += pointSystem['3ofKind']
         pointsMessage = 'You got a 3 of a kind! +' + str(pointSystem['3ofKind']) + ' points'
-        print('Total points: ' + str(points))
-        print('')
-        return(points,pointsMessage)
+        return(Tpoints,pointsMessage)
 
     if isTwoPair:
-        points += pointSystem['twoPair']
-        print('Winning Hand: ' + str(winningHand2))
-        print('')
+        Tpoints += pointSystem['twoPair']
         pointsMessage = 'You got a two pair! +' + str(pointSystem['twoPair']) + ' points'
-        print('Total points: ' + str(points))
-        print('')
-        return(points,pointsMessage)
+        return(Tpoints,pointsMessage)
 
     if isPair:
-        points += pointSystem['pair']
-        print('Winning Hand: ' + str(winningHand2))
-        print('')
+        Tpoints += pointSystem['pair']
         pointsMessage = 'You got a pair! +' + str(pointSystem['pair']) + ' points'
-        print('Total points: ' + str(points))
-        print('')
-        return(points,pointsMessage)
+        return(Tpoints,pointsMessage)
 
     elif isHighCard:
-        points += pointSystem['highCard']
-        print('Winning Hand: ' + str(winningHand2))
-        print('')
-        pointsMessage = 'You got a high card! +' + str(pointSystem['highCard']) + ' point'
-        print('Total points: ' + str(points))
-        print('')
-        return(points,pointsMessage)
+        Tpoints += pointSystem['highCard']
+        pointsMessage = 'You got a high card! +' + str(pointSystem['highCard']) + ' point'   
+        return(Tpoints,pointsMessage)
     
     
 
@@ -528,6 +496,8 @@ pointSystem = {'highCard':1,
 
 points = [0,'']
 valueOrder = ['J','Q','K','A']
+
+chips = 1000
 
 isTwoPair = False
 isPair = False
@@ -564,6 +534,7 @@ tFullHouse = [['d10', 'c10'], ['c6', 'h10', 'h7', 's3', 'd3']]
 tFlush5 = [['d10', 'cJ'], ['cQ', 'cK', 'h8', 'c2', 'c4']]
 tFlush6 = [['c10', 'cJ'], ['cQ', 'cK', 'h8', 'c2', 'c4']]
 
+tStraightA = [['s2', 'sA'], ['c5', 'c3', 'c4', 'h7', 'h10']]
 tStraight5 = [['d4', 's5'], ['s6', 'd7', 'h8', 'cJ', 'cA']] #_______
 tStraight6 = [['d4', 's5'], ['s6', 'd7', 'h8', 'c9', 'cA']] #_______
 tStraightD1 = [['d5', 's5'], ['s6', 'd7', 'h8', 'c9', 'hJ']] #______
@@ -586,17 +557,20 @@ testPair = [['d2', 's2'], ['c3', 'h4', 's5', 'h6', 's6']]
 #points = checkHand(tStraightFlush6[0], tStraightFlush6[1], points)
 
 #print(returnWinningHand(tPair[0], tPair[1], points))
-#print(isStraight(combine(tStraight6T2[0], tStraight6T2[1])[0]))
+#print(isStraight(combine(tStraightA[0], tStraightA[1])[0]))
 
 
 run = True
 dealButton = button((255,255,255),280,550,250,100,'Deal Hand')
-pointsTotalButton = button((255,255,255),400,500,1,1,'')
-winningHandTextButton = button((255,255,255),400,450,1,1,'')
-pointsMessageButton = button((255,255,255),400,400,1,1,'')
+pointsTotalText = button((255,255,255),400,500,1,1,'')
+winningHandText = button((255,255,255),400,450,1,1,'')
+pointsMessageText = button((255,255,255),400,400,1,1,'')
+
+buttonList = [dealButton]
+textsList = [pointsTotalText, winningHandText, pointsMessageText]
 
 while run:
-    redrawWindow(dealButton, pointsTotalButton, winningHandTextButton, pointsMessageButton)
+    redrawWindow(buttonList, textsList)
     pygame.display.update()
 
     for event in pygame.event.get():
@@ -614,18 +588,21 @@ while run:
                 points = checkHand(newPair,newTableCards, points[0])
                 pointsText = str(points[0])
                 pointsMessage = str(points[1])
-                winningHandText = 'Winning Hand: ' + str(returnWinningHand(newPair,newTableCards))
-                print(winningHandText)
+                winningHandMessage = 'Winning Hand: ' + str(returnWinningHand(newPair,newTableCards))
+                print(winningHandMessage)
                 print(pointsMessage)
-                pointsTotalButton.text = (str('Points: ' + pointsText))
-                pointsTotalButton.fontColor = (255,0,0)
-                winningHandTextButton.text = winningHandText
-                winningHandTextButton.fontSize = 40
-                pointsMessageButton.text = points[1]
+                pointsTotalText.text = (str('Points: ' + pointsText))
+                pointsTotalText.fontColor = (255,0,0)
+                winningHandText.text = winningHandMessage
+                winningHandText.fontSize = 40
+                pointsMessageText.text = points[1]
                 print(str('Points: ' + pointsText))
+                print()
+                print()
         
         if event.type == pygame.MOUSEMOTION:
-            if dealButton.isOver(pos):
-                dealButton.color = (128,128,128)
-            else:
-                dealButton.color = (255,255,255)
+            for button in buttonList:
+                if button.isOver(pos):
+                    button.color = (128,128,128)
+                else:
+                    button.color = (255,255,255)
