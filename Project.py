@@ -6,7 +6,7 @@ of cards (hands)
 It's possible we can expand the game to support playing against a computer
 '''
 
-import math, random, pygame, sys
+import math, random, pygame, sys, time
 
 pygame.init()
 pygame.font.init()
@@ -17,8 +17,9 @@ win.fill((255,255,255))
 
 
 class button():
-    def __init__(self, color, x,y,width,height, text='', fontColor = (0,0,0), fontSize=60):
+    def __init__(self, color, x, y, width, height, text='', fontColor = (0,0,0), fontSize=60):
         self.color = color
+        self.originalColor = color
         self.x = x
         self.y = y
         self.width = width
@@ -49,7 +50,7 @@ class button():
 
 
 
-def redrawWindow(buttonList, textsList):
+def redrawWindow(buttonList=[], textsList=[]):
     win.fill((255,255,255))
     for button in buttonList:
         button.draw(win,(0,0,0))
@@ -480,8 +481,17 @@ def checkHand(currentPair, currentTable, Tpoints):
         Tpoints += pointSystem['highCard']
         pointsMessage = 'You got a high card! +' + str(pointSystem['highCard']) + ' point'   
         return(Tpoints,pointsMessage)
-    
-    
+
+
+
+def displayMessage(text):
+    displayedMessageText.text = text
+    redrawWindow(buttonList,textsList)
+    pygame.display.update()
+    time.sleep(1.5)
+    displayedMessageText.text = ''
+
+
 
 pointSystem = {'highCard':1,
                'pair':5,
@@ -534,7 +544,7 @@ tFullHouse = [['d10', 'c10'], ['c6', 'h10', 'h7', 's3', 'd3']]
 tFlush5 = [['d10', 'cJ'], ['cQ', 'cK', 'h8', 'c2', 'c4']]
 tFlush6 = [['c10', 'cJ'], ['cQ', 'cK', 'h8', 'c2', 'c4']]
 
-tStraightA = [['s2', 'sA'], ['c5', 'c3', 'c4', 'h7', 'h10']]
+tStraightA = [['s2', 'sA'], ['c5', 'c3', 'c4', 'h7', 'h10']] #______
 tStraight5 = [['d4', 's5'], ['s6', 'd7', 'h8', 'cJ', 'cA']] #_______
 tStraight6 = [['d4', 's5'], ['s6', 'd7', 'h8', 'c9', 'cA']] #_______
 tStraightD1 = [['d5', 's5'], ['s6', 'd7', 'h8', 'c9', 'hJ']] #______
@@ -555,22 +565,30 @@ tRoyalFlush = [['d10', 'dJ'], ['dQ', 'dK', 'dA', 'cJ', 'cA']]
 testPair = [['d2', 's2'], ['c3', 'h4', 's5', 'h6', 's6']]
 
 #points = checkHand(tStraightFlush6[0], tStraightFlush6[1], points)
-
 #print(returnWinningHand(tPair[0], tPair[1], points))
 #print(isStraight(combine(tStraightA[0], tStraightA[1])[0]))
 
-
+start = 0
 run = True
-dealButton = button((255,255,255),280,550,250,100,'Deal Hand')
-pointsTotalText = button((255,255,255),400,500,1,1,'')
-winningHandText = button((255,255,255),400,450,1,1,'')
-pointsMessageText = button((255,255,255),400,400,1,1,'')
 
-buttonList = [dealButton]
-textsList = [pointsTotalText, winningHandText, pointsMessageText]
+dealButton = button((255,255,255),280,550,250,100,'Deal Hand')
+pointsTotalText = button((255,255,255),400,500,1,1,'',(255,0,0))
+winningHandText = button((255,255,255),400,450,1,1,'',(0,0,0),40)
+pointsMessageText = button((255,255,255),400,400,1,1,'')
+displayedMessageText = button((255,255,255),400,200,1,1,'',(255,0,0),50)
+chipsText = button((255,255,255),650,50,1,1,'Chips: ' + str(chips),(0,0,255))
+
+startButton = button((0,255,0),230,400,350,150,'START',(0,0,0),100)
+quitButton = button((255,0,0),10,20,90,30,'QUIT',(0,0,0),35)
+betButton = button((255,255,0),50,600,180,90,'Bet')
+
+buttonList = [dealButton,startButton,quitButton,betButton]
+textsList = [pointsTotalText, winningHandText, pointsMessageText,displayedMessageText,chipsText]
+
+
 
 while run:
-    redrawWindow(buttonList, textsList)
+
     pygame.display.update()
 
     for event in pygame.event.get():
@@ -578,31 +596,105 @@ while run:
 
         if event.type == pygame.QUIT:
             run = False
+            start = 0
             pygame.quit()
             quit()
 
-        if event.type == pygame.MOUSEBUTTONDOWN:
-            if dealButton.isOver(pos):
-                newPair = dealPair()
-                newTableCards = addCards(newPair)
-                points = checkHand(newPair,newTableCards, points[0])
-                pointsText = str(points[0])
-                pointsMessage = str(points[1])
-                winningHandMessage = 'Winning Hand: ' + str(returnWinningHand(newPair,newTableCards))
-                print(winningHandMessage)
-                print(pointsMessage)
-                pointsTotalText.text = (str('Points: ' + pointsText))
-                pointsTotalText.fontColor = (255,0,0)
-                winningHandText.text = winningHandMessage
-                winningHandText.fontSize = 40
-                pointsMessageText.text = points[1]
-                print(str('Points: ' + pointsText))
-                print()
-                print()
+        if start == 1:
+            redrawWindow(buttonList,textsList)
+            pygame.display.update()
+
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                if dealButton.isOver(pos):
+                    
+                    newPair = dealPair()
+                    newTableCards = addCards(newPair)
+
+                    points = checkHand(newPair,newTableCards, points[0])
+                    pointsText = str(points[0])
+                    pointsMessage = str(points[1])
+                    winningHandMessage = 'Winning Hand: ' + str(returnWinningHand(newPair,newTableCards))
+                    print(winningHandMessage)
+                    print(pointsMessage)
+                    pointsTotalText.text = (str('Points: ' + pointsText))
+                    winningHandText.text = winningHandMessage
+                    pointsMessageText.text = points[1]
+                    print(str('Points: ' + pointsText))
+                    print()
+                    print()
+                
+                elif betButton.isOver(pos):
+                    betButton.color = (255,255,255)
+                    done = False
+                    betButton.text = ''
+
+                    while not done:
+                        for event in pygame.event.get():
+                            
+                            if event.type == pygame.KEYDOWN:
+                                if event.key == pygame.K_RETURN:
+                                    
+                                    try:
+                                        betAmount = int(betButton.text)
+
+                                        if betAmount <= chips and betAmount > 0:
+                                            displayMessage('You bet ' + str(betButton.text) + ' chips')
+                                            done = True
+                                            chips -= betAmount
+                                            chipsText.text = 'Chips: ' + str(chips)
+
+                                        elif betAmount < 0:
+                                            displayMessage("You must bet a positive amount!")
+
+                                        else:
+                                            displayMessage("You can't bet more chips than you have!")
+                                        
+                                    except ValueError:
+                                        displayMessage('Your bet must be an integer!')
+                                    
+                                elif event.key == pygame.K_BACKSPACE:
+                                    betButton.text = betButton.text[:-1]
+                                else:
+                                    if len(betButton.text) <= 5:
+                                        betButton.text += event.unicode
+                            
+                            elif event.type == pygame.QUIT:
+                                run = False
+                                done = True
+                                start = 0
+                                pygame.quit()
+                                quit()
+
+                        redrawWindow(buttonList,textsList)
+                        pygame.display.update()
+
+                    betButton.color = betButton.originalColor
+                    betButton.text = 'Bet'
+
+                elif quitButton.isOver(pos):
+                    start = 0
+                    buttonList.append(startButton)
+        
+        else:
+            redrawWindow([startButton])
+
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                if startButton.isOver(pos):
+                    start = 1
+                    points = [0,'']
+                    pointsTotalText.text = ''
+                    winningHandText.text = ''
+                    pointsMessageText.text = ''
+                    chips = 1000
+                    buttonList.remove(startButton)
+                    betButton.text = 'Bet'
+                    chipsText.text = 'Chips: ' + str(chips)
         
         if event.type == pygame.MOUSEMOTION:
             for button in buttonList:
                 if button.isOver(pos):
                     button.color = (128,128,128)
                 else:
-                    button.color = (255,255,255)
+                    button.color = button.originalColor
+
+                    
