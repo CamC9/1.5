@@ -459,7 +459,7 @@ def returnBetterHand(hand1,hand2):
         elif checkValue(winningHand2[-(i+1)][-1]) > checkValue(winningHand1[-(i+1)][-1]):
             return([winningHand2,'Comp wins with a ' + winningHandRank2,1])
 
-    return([winningHand1,'None','Both win with a ' + winningHandRank1,2])
+    return([winningHand1,'Both win with a ' + winningHandRank1,2])
 
 
 
@@ -535,7 +535,7 @@ run = True
 dealButton = button((255,255,255),280,550,250,100,'Deal Cards')
 userWinningHandText = button((255,255,255),400,450,1,1,'',(0,0,0),40)
 compWinningHandText = button((255,255,255),400,475,1,1,'',(0,0,0),40)
-displayedMessageText = button((255,255,255),400,200,1,1,'',(255,0,0),50)
+displayedMessageText = button((255,255,255),400,125,1,1,'',(255,0,0),50)
 chipsText = button((255,255,255),650,50,1,1,'Chips: ' + str(chips),(0,0,255))
 tableCardsText = button((255,255,255),400,300,1,1,'')
 userPairText = button((255,255,255),200,375,1,1,'',(0,0,0),40)
@@ -613,7 +613,7 @@ while run:
                                             chips -= betAmount
                                             chipsText.text = 'Chips: ' + str(chips)
 
-                                        elif betAmount < 0:
+                                        elif betAmount <= 0:
                                             displayMessage("You must bet a positive amount!")
 
                                         else:
