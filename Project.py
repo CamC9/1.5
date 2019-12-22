@@ -52,15 +52,48 @@ class button():
             
         return False
 
+class Card(pygame.sprite.Sprite):
 
+    def __init__(self, image, x = 280, y = 280):
+        
+        pygame.sprite.Sprite.__init__(self)
+        self.image = pygame.image.load(image).convert_alpha()
+        self.rect = self.image.get_rect()
+        self.x = x
+        self.y = y
 
-def redrawWindow(buttonList=[], textsList=[]):
+    def draw(self, win, outline = None):
+        
+        if outline:
+            pygame.draw.rect(win, outline, (self.x - 2, self.y - 2, self.width + 4, self.height + 4), 0)
+
+        if self.image != None:
+            win.blit(self.image, [self.x, self.y])
+            
+    def scaleImage(self, scaleX, scaleY):
+        self.image = pygame.transform.scale(self.image,[scaleX,scaleY])
+        self.rect = self.image.get_rect()
+
+activeSprites = pygame.sprite.Group()
+totalSprites = pygame.sprite.Group()
+
+EightDiamond = Card('Cardz/8D.png',280,280)
+print(EightDiamond.rect)
+EightDiamond.scaleImage(69,106)
+print(EightDiamond.rect)
+
+totalSprites.add(EightDiamond)
+activeSprites.add(EightDiamond)
+
+def redrawWindow(buttonList=[], textsList=[], spriteList=[]):
     
     win.fill((255,255,255))
     for button in buttonList:
         button.draw(win,(0,0,0))
     for text in textsList:
         text.draw(win)
+    for sprite in spriteList:
+        sprite.draw(win)
     
 
 
@@ -569,7 +602,7 @@ while run:
             quit()
 
         if start == 1:
-            redrawWindow(buttonList,textsList)
+            redrawWindow(buttonList,textsList,activeSprites)
             pygame.display.update()
 
             if event.type == pygame.MOUSEBUTTONDOWN:
