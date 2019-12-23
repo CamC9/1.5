@@ -763,7 +763,7 @@ while run:
                         if card.suit == 'c':
                             card.x += 15 * i
                             activeSprites.add(card)
-                    cardBack.x += 390
+                    cardBack.x += 400
                     activeSprites.add(cardBack)
         
         if event.type == pygame.MOUSEMOTION:
