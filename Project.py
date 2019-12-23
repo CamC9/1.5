@@ -54,13 +54,15 @@ class button():
 
 class Card(pygame.sprite.Sprite):
 
-    def __init__(self, image, x = 280, y = 280):
+    def __init__(self, image, suit, value, x = 0, y = 280):
         
         pygame.sprite.Sprite.__init__(self)
         self.image = pygame.image.load(image).convert_alpha()
         self.rect = self.image.get_rect()
         self.x = x
         self.y = y
+        self.suit = suit
+        self.value = value
 
     def draw(self, win, outline = None):
         
@@ -74,16 +76,7 @@ class Card(pygame.sprite.Sprite):
         self.image = pygame.transform.scale(self.image,[scaleX,scaleY])
         self.rect = self.image.get_rect()
 
-activeSprites = pygame.sprite.Group()
-totalSprites = pygame.sprite.Group()
 
-EightDiamond = Card('Cardz/8D.png',280,280)
-print(EightDiamond.rect)
-EightDiamond.scaleImage(69,106)
-print(EightDiamond.rect)
-
-totalSprites.add(EightDiamond)
-activeSprites.add(EightDiamond)
 
 def redrawWindow(buttonList=[], textsList=[], spriteList=[]):
     
@@ -582,9 +575,74 @@ betButton = button((255,255,0),50,600,180,90,'Bet')
 buttonList = [dealButton,startButton,quitButton,betButton]
 textsList = [winnerText,userWinningHandText,compWinningHandText,displayedMessageText,chipsText,tableCardsText,userPairText,compPairText]
 
-#print(returnWinningHand('','',['c2','s2','d3','c3','sJ','hA','hQ']))
-#print(returnWinningHand('','',['c8','s8','d3','c3','sJ','hA','hQ']))
-#print(returnBetterHand(combine(tRoyalFlush[0],tRoyalFlush[-1])[0],combine(tStraightA[0], tStraightA[-1])[0]))
+activeSprites = pygame.sprite.Group()
+totalSprites = pygame.sprite.Group()
+
+C2 = Card('Cardz/2C.png','c',2)
+C3 = Card('Cardz/3C.png','c',3)
+C4 = Card('Cardz/4C.png','c',4)
+C5 = Card('Cardz/5C.png','c',5)
+C6 = Card('Cardz/6C.png','c',6)
+C7 = Card('Cardz/7C.png','c',7)
+C8 = Card('Cardz/8C.png','c',8)
+C9 = Card('Cardz/9C.png','c',9)
+C10 = Card('Cardz/10C.png','c',10)
+CJ = Card('Cardz/JC.png','c',11)
+CQ = Card('Cardz/QC.png','c',12)
+CK = Card('Cardz/KC.png','c',13)
+CA = Card('Cardz/AC.png','c',14)
+D2 = Card('Cardz/2D.png','d',2)
+D3 = Card('Cardz/3D.png','d',3)
+D4 = Card('Cardz/4D.png','d',4)
+D5 = Card('Cardz/5D.png','d',5)
+D6 = Card('Cardz/6D.png','d',6)
+D7 = Card('Cardz/7D.png','d',7)
+D8 = Card('Cardz/8D.png','d',8)
+D9 = Card('Cardz/9D.png','d',9)
+D10 = Card('Cardz/10D.png','d',10)
+DJ = Card('Cardz/JD.png','d',11)
+DQ = Card('Cardz/QD.png','d',12)
+DK = Card('Cardz/KD.png','d',13)
+DA = Card('Cardz/AD.png','d',14)
+H2 = Card('Cardz/2H.png','h',2)
+H3 = Card('Cardz/3H.png','h',3)
+H4 = Card('Cardz/4H.png','h',4)
+H5 = Card('Cardz/5H.png','h',5)
+H6 = Card('Cardz/6H.png','h',6)
+H7 = Card('Cardz/7H.png','h',7)
+H8 = Card('Cardz/8H.png','h',8)
+H9 = Card('Cardz/9H.png','h',9)
+H10 = Card('Cardz/10H.png','h',10)
+HJ = Card('Cardz/JH.png','h',11)
+HQ = Card('Cardz/QH.png','h',12)
+HK = Card('Cardz/KH.png','h',13)
+HA = Card('Cardz/AH.png','h',14)
+S2 = Card('Cardz/2S.png','s',2)
+S3 = Card('Cardz/3S.png','s',3)
+S4 = Card('Cardz/4S.png','s',4)
+S5 = Card('Cardz/5S.png','s',5)
+S6 = Card('Cardz/6S.png','s',6)
+S7 = Card('Cardz/7S.png','s',7)
+S8 = Card('Cardz/8S.png','s',8)
+S9 = Card('Cardz/9S.png','s',9)
+S10 = Card('Cardz/10S.png','s',10)
+SJ = Card('Cardz/JS.png','s',11)
+SQ = Card('Cardz/QS.png','s',12)
+SK = Card('Cardz/KS.png','s',13)
+SA = Card('Cardz/AS.png','s',14)
+cardBack = Card('Cardz/red_back.png','',0)
+
+Cards = [
+            C2, C3, C4, C5, C6, C7, C8, C9, C10, CJ, CQ, CK, CA,
+            D2, D3, D4, D5, D6, D7, D8, D9, D10, DJ, DQ, DK, DA,
+            H2, H3, H4, H5, H6, H7, H8, H9, H10, HJ, HQ, HK, HA,
+            S2, S3, S4, S5, S6, S7, S8, S9, S10, SJ, SQ, SK, SA,
+            cardBack
+        ]
+
+for card in Cards:
+    card.scaleImage(69*2,106*2)
+    totalSprites.add(card)
 
 
 
@@ -657,6 +715,7 @@ while run:
                                     
                                 elif event.key == pygame.K_BACKSPACE:
                                     betButton.text = betButton.text[:-1]
+                                    D8.x += 10
                                 else:
                                     if len(betButton.text) <= 5:
                                         betButton.text += event.unicode
@@ -668,7 +727,7 @@ while run:
                                 pygame.quit()
                                 quit()
 
-                        redrawWindow(buttonList,textsList)
+                        redrawWindow(buttonList,textsList,activeSprites)
                         pygame.display.update()
 
                     betButton.color = betButton.originalColor
@@ -677,6 +736,11 @@ while run:
                 elif quitButton.isOver(pos):
                     start = 0
                     buttonList.append(startButton)
+                    activeSprites = pygame.sprite.Group()
+
+                    for card in Cards:
+                        card.x = 0
+                        card.y = 280
         
         else:
             redrawWindow([startButton])
@@ -694,6 +758,13 @@ while run:
                     buttonList.remove(startButton)
                     betButton.text = 'Bet'
                     chipsText.text = 'Chips: ' + str(chips)
+
+                    for i, card in enumerate(Cards):
+                        if card.suit == 'c':
+                            card.x += 15 * i
+                            activeSprites.add(card)
+                    cardBack.x += 390
+                    activeSprites.add(cardBack)
         
         if event.type == pygame.MOUSEMOTION:
             for button in buttonList:
